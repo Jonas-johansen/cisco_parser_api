@@ -7,18 +7,19 @@ from fastapi import FastAPI, Form
 app = FastAPI()
 
 # Cisco Device Parser - API
-# Developed by Jonas Skaret Johansen, NH Data
+# Developed by Jonas Skaret Johansen, https://nh-data.no
 
 def run_cisco_command(host, command):
+    # Use following setup if your credentials is the same for every device, if not, do the same with credentials as is done with host.
     cisco_device = { 
         "device_type": "cisco_ios_telnet", # for ssh use cisco_ios instead. (telnet is a bit faster)
         "host": host,
         "username": "jonas", # Username for device
-        "password": 'jonas123',
-        "secret": "jonas123" # Password for device
+        "password": 'jonas123', # Password for device
+        "secret": "jonas123" # Enable password for device
     }
     with ConnectHandler(**cisco_device) as net_connect:
-        net_connect.enable()
+        net_connect.enable() # Sets the session in enable mode, you may remove if not needed.
         output = net_connect.send_command(command)
     return output
 
@@ -34,6 +35,7 @@ async def shcommand(device: str = Form(), command: str = Form()):
     else:
         return "Command not supported for parsing, please make sure to write entire command. Supported commands: " + ", ".join(supported_show_commands)
 
+# Returns unparsed response from command.
 @app.post('/unparsed_command')
 async def unparsedcmd(device: str = Form(), command: str = Form()):
     return run_cisco_command(device, command)
