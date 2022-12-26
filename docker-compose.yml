@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+
+  ciscoparser:
+
+    container_name: ciscoparser
+
+    restart: always
+
+    build: .
+
+    ports:
+
+      - "8080:8080"
+
+

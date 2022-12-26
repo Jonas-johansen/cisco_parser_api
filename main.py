@@ -13,9 +13,9 @@ def run_cisco_command(host, command):
     cisco_device = { 
         "device_type": "cisco_ios_telnet", # for ssh use cisco_ios instead. (telnet is a bit faster)
         "host": host,
-        "username": "nhadmin", # Username for device
-        "password": 'Helpmeindeed!123',
-        "secret": "Helpmeindeed!123" # Password for device
+        "username": "jonas", # Username for device
+        "password": 'jonas123',
+        "secret": "jonas123" # Password for device
     }
     with ConnectHandler(**cisco_device) as net_connect:
         net_connect.enable()

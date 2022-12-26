@@ -1,0 +1,5 @@
+FastAPI
+uvicorn
+ntc-templates
+netmiko
+python-multipart
