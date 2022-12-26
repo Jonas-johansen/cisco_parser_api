@@ -2,7 +2,7 @@ import os
 from ntc_templates.parse import parse_output
 from netmiko import ConnectHandler
 
-from fastapi import FastAPI, Request, HTTPException, Depends, HTTPException, status, Body, Form
+from fastapi import FastAPI, Form
 
 app = FastAPI()
 
