@@ -40,6 +40,7 @@ async def shcommand(device: str = Form(), command: str = Form()):
     command_parsed = parse_output(platform="cisco_ios", command=command, data=data)
     return command_parsed
 
+# Returns unparsed response from command.
 @app.post('/unparsed_command')
 async def unparsedcmd(device: str = Form(), command: str = Form()):
     return run_cisco_command(device, command)
