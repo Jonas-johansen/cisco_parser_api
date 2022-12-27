@@ -1,0 +1,18 @@
+Personal notes:
+Use Pydantic for input validation and request and response serialization: FastAPI integrates seamlessly with Pydantic, which is a library for defining and validating data models. You can define your request and response data models using Pydantic and FastAPI will automatically validate the data and serialize it to and from JSON.
+
+Use dependency injection for managing dependencies: FastAPI uses dependency injection to manage dependencies between different parts of your application. This makes it easier to write testable, modular code and helps to avoid tight coupling between components.
+
+Use OpenAPI and Swagger UI for documentation: FastAPI integrates with OpenAPI, which is a specification for describing APIs. This allows you to automatically generate API documentation using Swagger UI.
+
+Use asyncio and uvloop for better performance: FastAPI is built on top of asyncio, which is a library for writing asynchronous code in Python. You can use uvloop, which is a high-performance asyncio event loop, to further improve the performance of your API.
+
+Use the fastapi.security module for authentication and authorization: FastAPI includes a security module that provides support for various authentication and authorization schemes. You can use this module to easily add security to your API.
+
+Use the fastapi.middleware module for global request processing: The fastapi.middleware module allows you to define middleware functions that can be applied globally to all your API endpoints. You can use this feature to implement things like logging, rate limiting, and caching.
+
+Use the fastapi.exception_handlers decorator for handling exceptions: FastAPI provides a decorator called fastapi.exception_handlers that allows you to define custom exception handling logic for your API. This can be useful for translating application-specific exceptions into HTTP responses.
+
+Use the fastapi.background decorator for running tasks in the background: The fastapi.background decorator allows you to define functions that will be run in the background asynchronously. This can be useful for tasks that take a long time to complete, such as sending emails or scraping web pages.
+
+

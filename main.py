@@ -8,6 +8,7 @@ import configparser
 from fastapi import FastAPI, Form, HTTPException
 import os.path
 from os import path
+from api import do_command
 
 app = FastAPI()
 
@@ -80,3 +81,7 @@ async def PostParser(platform: str = Form(), command: str = Form(), clioutput: s
     output = parse_output(platform=platform, command=command, data=clioutput)
     return output
 
+
+@app.post('/testing')
+async def testing():
+    return do_command.cisco_ios()
