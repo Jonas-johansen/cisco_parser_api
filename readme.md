@@ -80,6 +80,7 @@ Example response:
     }
 ]
 ```
+In this case, you can see only about half of the interface cli output was provided, therefore alot of the fields are empty.
 
 Developed by Jonas Skaret Johansen, https://nh-data.no. You are free to use and modify the project as you see fit.
 
