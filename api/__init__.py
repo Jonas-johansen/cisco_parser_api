@@ -1,5 +1,6 @@
 from .do_command import *
-from .parse_outputs import *
+from .parse import *
 
 
-__all__ = ["cisco_ios"]
+__all__ = ["ParseCLIOutput", "RunDeviceCommand"]
+
