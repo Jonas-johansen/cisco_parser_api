@@ -43,6 +43,44 @@ print(response.json())
 
 ```
 
+Example response:
+```json
+[
+    {
+        "interface": "GigabitEthernet4",
+        "link_status": "administratively down",
+        "protocol_status": "down",
+        "hardware_type": "iGbE",
+        "address": "2481.3bbe.a1a4",
+        "bia": "2481.3bbe.a1a4",
+        "description": "",
+        "ip_address": "",
+        "mtu": "1500",
+        "duplex": "Auto Duplex",
+        "speed": "Auto Speed",
+        "media_type": "RJ45",
+        "bandwidth": "1000000 Kbit",
+        "delay": "10 usec",
+        "encapsulation": "ARPA",
+        "last_input": "",
+        "last_output": "",
+        "last_output_hang": "",
+        "queue_strategy": "",
+        "input_rate": "",
+        "output_rate": "",
+        "input_packets": "",
+        "output_packets": "",
+        "input_errors": "",
+        "crc": "",
+        "abort": "",
+        "output_errors": "",
+        "vlan_id": "",
+        "vlan_id_inner": "",
+        "vlan_id_outer": ""
+    }
+]
+```
+
 Developed by Jonas Skaret Johansen, https://nh-data.no. You are free to use and modify the project as you see fit.
 
 
