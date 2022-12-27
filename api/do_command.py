@@ -12,8 +12,15 @@ import re
 # logger = logging.getLogger("netmiko")
 
 # Excecute a command on any device, as long as it is supported by NetMiko
-def RunCommand(host, password, secret, device_type, command, enable):
-    with ConnectHandler(host=host, password=password, secret=secret, device_type=device_type) as nc:
+def RunCommand(host, username, password, secret, device_type, command, enable):
+    device = {
+        "device_type": device_type,
+        "host": host,
+        "username": username,
+        "password": password,
+        "secret": secret
+    }
+    with ConnectHandler(**device) as nc:
         if enable:
             nc.enable()
         output = nc.send_command(command)
@@ -53,6 +60,23 @@ def RunDeviceCommand(device, command, parsing):
 
 
 
+# Mass automation
+
+def RunMassDeviceCommand(devices, command, enable, parse):
+    outputs = []
+    lst = devices.split(',')
+    for device in lst:
+        config_device = get_device_config(device)
+        with ConnectHandler(**config_device) as nc:
+            if enable:
+                nc.enable()
+            output = nc.send_command(command, use_textfsm=parse)
+        outputs.append(output)
+    return outputs
+        
+
+
+# OS specific commands
 
 def do_cisco_ios_command(device, command, parsing):
     with ConnectHandler(**device) as nc:

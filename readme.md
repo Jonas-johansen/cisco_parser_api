@@ -15,6 +15,8 @@ You can configure the network equipment in the config.ini file, or you can set u
 This project uses Netmiko and ntc-templates, and all credit goes to their creators for creating such amazing projects.
 I strongly recommend checking out both Netmiko and ntc-templates before using this project.
 
+Please be aware: Be VERY VERY carefull using this API in production, especially with enable mode!!
+
 To run the API, use uvicorn, or use the provided docker image if needed.
 
 Example post:
