@@ -98,3 +98,4 @@ show vrrp brief
 show vtp status
 traceroute
 show interface
+sh int 

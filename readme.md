@@ -2,7 +2,7 @@
 
 The API is a tool that allows you to connect to and execute commands on network equipment, as well as parse the output into a JSON format. It was primarily developed for personal use, so it might not be right for your network / setup.
 
-Please note that the API is somewhat slow, so it may not be suitable for real-time applications. The parsing module is relatively fast, taking about 300 milliseconds, but creating a session with each network device and executing a command can take anywhere from 5-10 seconds with SSH or 2-3 seconds with Telnet.
+Please note that the API is somewhat slow, so it may not be suitable for real-time applications. The parsing module is relatively fast, taking about 20 milliseconds, but creating a session with each network device and executing a command can take anywhere from 5-10 seconds with SSH or 2-3 seconds with Telnet.
 
 To improve speed, you can create an SSH or Telnet session pool, which maintains a live connection with each network device at all times. However, this may not be practical for large networks. Instead, you could consider creating a temporary pool that keeps the connection open for 10-15 minutes before resetting. This can significantly improve load times when executing multiple commands on the same device, except for the first command. More documentation on these options will be provided soon.
 

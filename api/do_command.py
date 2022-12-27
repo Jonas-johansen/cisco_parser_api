@@ -11,6 +11,15 @@ import re
 # logging.basicConfig(filename="debug.log", level=logging.DEBUG)
 # logger = logging.getLogger("netmiko")
 
+# Excecute a command on any device, as long as it is supported by NetMiko
+def RunCommand(host, password, secret, device_type, command, enable):
+    with ConnectHandler(host=host, password=password, secret=secret, device_type=device_type) as nc:
+        if enable:
+            nc.enable()
+        output = nc.send_command(command)
+    return output
+
+
 # Import devices.
 def get_device_config(device_name):
     config = configparser.ConfigParser()
@@ -18,6 +27,7 @@ def get_device_config(device_name):
     device_config = config[device_name]
     return device_config
 
+# Run command on presaved device
 def RunDeviceCommand(device, command, parsing):
     # Get config by device ID.
     device = get_device_config(device)
@@ -40,6 +50,9 @@ def RunDeviceCommand(device, command, parsing):
             return do_cisco_ios_command(device, command, parsing)
         case 'huawei_vrp':
             return do_huawei_vrp_command(device, command, parsing)
+
+
+
 
 def do_cisco_ios_command(device, command, parsing):
     with ConnectHandler(**device) as nc:
