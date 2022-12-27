@@ -1,20 +1,23 @@
+# Cisco Device Parser - API
+# Developed by Jonas Skaret Johansen, NH Data
+# Not yet designed for heavy workloads.
 import os
 from ntc_templates.parse import parse_output
 from netmiko import ConnectHandler
 import configparser
 from fastapi import FastAPI, Form, HTTPException
+import os.path
+from os import path
 
 app = FastAPI()
 
+# if using config.ini
 def get_device_config(device_name):
     config = configparser.ConfigParser()
     config.read("config.ini")
     device_config = config[device_name]
     return device_config
 
-# Cisco Device Parser - API
-# Developed by Jonas Skaret Johansen, NH Data
-# Not yet designed for heavy workloads.
 def run_cisco_command(device, command):
     cisco_device = get_device_config(device)
     with ConnectHandler(**cisco_device) as net_connect:
@@ -66,4 +69,14 @@ async def show_ip_route(device: str = Form(), network: str = Form()):
     data = run_cisco_command(device, command)
     route_parsed = parse_output(platform="cisco_ios", command="show ip route", data=data)
     return route_parsed
+
+# Allow user to send unparsed CLI outputs to the API and returns a JSON response
+@app.post('/parser')
+async def PostParser(platform: str = Form(), command: str = Form(), clioutput: str = Form()):
+    if not path.exists('platforms/' + platform + '.txt'):
+            raise HTTPException(status_code=400, detail="Platform not supported.")
+    platform_file = open('platform/' + platform + '.txt', 'r')
+
+    output = parse_output(platform=platform, command=command, data=clioutput)
+    return output
 

@@ -1,0 +1,21 @@
+display acl all
+display arp all
+display arp brief
+display interface
+display interface brief
+display interface description
+display ip routing-table verbose
+display ipv6 neighbors
+display isis peer
+display lldp neighbor
+display nat server
+display port vlan 
+display service-set all
+display service-set id id
+display sn license
+display snmp-agent community read
+display startup
+display temperature
+display traffic-filter applied-record
+display version
+
