@@ -24,6 +24,3 @@ def ParseCLIOutput(platform, command, cli_output):
     output = parse_output(platform=platform, command=command, data=cli_output)
     return output
 
-
-
-

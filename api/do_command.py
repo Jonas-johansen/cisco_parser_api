@@ -89,4 +89,6 @@ def RunDeviceCommandThreading(devices, commands, enable, parse, conft):
         results = [executor.submit(connect_to_device_and_run_commands, device) for device in lst]
     return [result.result() for result in results]
 
+        
+
 
