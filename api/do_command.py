@@ -1,92 +1,94 @@
-from pydantic import BaseModel
-from ntc_templates.parse import parse_output
-from netmiko import ConnectHandler
+import re
+import logging
+from netmiko import ConnectHandler, NetMikoTimeoutException, NetMikoAuthenticationException
 import configparser
 from fastapi import HTTPException
-import re
+import threading
+import os 
+import json 
 
-# For debugging purposes (Creates a debug.log file)
-#---
-# import logging
-# logging.basicConfig(filename="debug.log", level=logging.DEBUG)
-# logger = logging.getLogger("netmiko")
+logging.basicConfig(filename="sessions.log", level=logging.DEBUG)
+logger = logging.getLogger("netmiko")
 
-# Excecute a command on any device, as long as it is supported by NetMiko
-def RunCommand(host, username, password, secret, device_type, command, enable):
-    device = {
-        "device_type": device_type,
-        "host": host,
-        "username": username,
-        "password": password,
-        "secret": secret
-    }
-    with ConnectHandler(**device) as nc:
-        if enable:
-            nc.enable()
-        output = nc.send_command(command)
+
+
+def connect_to_device(device_type, host, username, password, secret):
+    try: 
+        device = {
+            "device_type": device_type,
+            "host": host,
+            "username": username,
+            "password": password,
+            "secret": secret
+        }
+        return ConnectHandler(**device)
+    except (NetMikoTimeoutException, NetMikoAuthenticationException) as e:
+        print(f"Failed to connect to {device['host']}: {e}")
+        raise HTTPException(status_code=400, detail=f"Failed to connect to {device['host']}: {e}")
+
+
+def run_commands(nc, commands, enable, parse, conft):
+    if enable:
+        nc.enable()
+    outputs = []
+    print(commands)
+    lst = commands.split(',')
+    for command in lst:
+        if conft:
+            output = do_config(nc, commands)
+        else:
+            output = nc.send_command(command, use_textfsm=parse)
+        outputs.append(output)
+    return outputs
+
+def do_config(nc, commands):
+    lst = commands.split(',')
+    output = nc.send_config_set(lst)
+    output += nc.save_config()
     return output
 
-
-# Import devices.
 def get_device_config(device_name):
     config = configparser.ConfigParser()
     config.read("config.ini")
-    device_config = config[device_name]
-    return device_config
-
-# Run command on presaved device
-def RunDeviceCommand(device, command, parsing):
-    # Get config by device ID.
-    device = get_device_config(device)
-    if parsing:
-        # Reads commands of platform type.
-        with open('commands/' + device['device_type'] + '.txt') as f:
-            lines = f.readlines()
-        # Remove \n from each item in list    
-        supported_commands = [line.strip() for line in lines]
-        # Adds to regex list. This is used so that if the command is "show ip interface gi4" it will still match the command "show ip interface"
-        supported_commands_pattern = "|".join(supported_commands)
-        # Throw exception if the platform does not support parsing of the command as specified.
-        if not re.match(supported_commands_pattern, command):
-            raise HTTPException(status_code=400, detail="Command not supported for parsing on this platform. Supported commands for " + device['device_type'] + " is " + ', '.join(supported_commands)) 
-
-    match device['device_type']:
-        case 'cisco_ios':
-            return do_cisco_ios_command(device, command, parsing)
-        case 'cisco_ios_telnet':
-            return do_cisco_ios_command(device, command, parsing)
-        case 'huawei_vrp':
-            return do_huawei_vrp_command(device, command, parsing)
+    return config[device_name]
 
 
-
-# Mass automation
-
-def RunMassDeviceCommand(devices, command, enable, parse):
+def RunCommand(device_type, host, username, password, secret, command, enable, parse, conft):
+    with connect_to_device(device_type, host, username, password, secret) as nc:
+        return run_commands(nc, command, enable, parse, conft)
+        
+        
+def RunDeviceCommand(devices, commands, enable, parse, conft):
     outputs = []
     lst = devices.split(',')
     for device in lst:
         config_device = get_device_config(device)
-        with ConnectHandler(**config_device) as nc:
-            if enable:
-                nc.enable()
-            output = nc.send_command(command, use_textfsm=parse)
+        with connect_to_device(**config_device) as nc:
+            output = run_commands(nc, commands, enable, parse, conft)
         outputs.append(output)
     return outputs
+
+        
+        
+from concurrent.futures import ThreadPoolExecutor
+
+def RunDeviceCommandThreading(devices, commands, enable, parse, conft):
+    def connect_to_device_and_run_commands(device):
+        config_device = get_device_config(device)
+        try:
+            with connect_to_device(**config_device) as nc:
+                output = run_commands(nc, commands, enable=enable, parse=parse, conft=conft)
+            return output
+        except ConnectError as e:
+            return f"Failed to connect to {device}: {e}"
+        except CommandError as e:
+            return f"Failed to run commands on {device}: {e}"
+
+    lst = devices.split(',')
+    with ThreadPoolExecutor() as executor:
+        results = [executor.submit(connect_to_device_and_run_commands, device) for device in lst]
+    return [result.result() for result in results]
+
         
 
-
-# OS specific commands
-
-def do_cisco_ios_command(device, command, parsing):
-    with ConnectHandler(**device) as nc:
-        nc.fast_cli = True
-        nc.enable() # Activates enable mode. If you only use certain show commands you can remove this. 
-        if parsing:
-            output = nc.send_command(command, use_textfsm=True) # Uses the ntc-templates library to parse the output to .json. 
-                                                                # You can use use_genie=True if you rather want to use the cisco Genie parsers.
-                                                                # You can not use both.
-        else:
-            output = nc.send_command(command)
-    return output
 
