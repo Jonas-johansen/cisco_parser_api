@@ -17,70 +17,8 @@ Please be aware: Be VERY VERY carefull using this API in production, especially 
 
 To run the API, use uvicorn, or use the provided docker image if needed.
 
-Example post:
+Check out examples for how to use it.
 
-```py
-import requests
-
-url = "http://api.local/cli_parser"
-form_data = {
-    "platform": "cisco_ios",
-    "command": "show interface",
-    "cli_output": """GigabitEthernet4 is administratively down, line protocol is down
-  Hardware is iGbE, address is 5d6a.e6f5.38f2 (bia 5d6a.e6f5.38f2)
-  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,
-     reliability 255/255, txload 1/255, rxload 1/255
-  Encapsulation ARPA, loopback not set
-  Keepalive set (10 sec)
-  Auto Duplex, Auto Speed, media type is RJ45"""
-}
-headers = {
-    "Content-Type": "application/x-www-form-urlencoded"
-}
-
-response = requests.post(url, data=form_data, headers=headers)
-print(response.status_code)
-print(response.json())
-
-```
-
-Example response:
-```json
-[
-    {
-        "interface": "GigabitEthernet4",
-        "link_status": "administratively down",
-        "protocol_status": "down",
-        "hardware_type": "iGbE",
-        "address": "5d6a.e6f5.38f2",
-        "bia": "5d6a.e6f5.38f2",
-        "description": "",
-        "ip_address": "",
-        "mtu": "1500",
-        "duplex": "Auto Duplex",
-        "speed": "Auto Speed",
-        "media_type": "RJ45",
-        "bandwidth": "1000000 Kbit",
-        "delay": "10 usec",
-        "encapsulation": "ARPA",
-        "last_input": "",
-        "last_output": "",
-        "last_output_hang": "",
-        "queue_strategy": "",
-        "input_rate": "",
-        "output_rate": "",
-        "input_packets": "",
-        "output_packets": "",
-        "input_errors": "",
-        "crc": "",
-        "abort": "",
-        "output_errors": "",
-        "vlan_id": "",
-        "vlan_id_inner": "",
-        "vlan_id_outer": ""
-    }
-]
-```
 In this case, you can see only about half of the interface cli output was provided, therefore alot of the fields are empty.
 
 Developed by Jonas Skaret Johansen, https://nh-data.no. 

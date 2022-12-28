@@ -79,10 +79,8 @@ def RunDeviceCommandThreading(devices, commands, enable, parse, conft):
             with connect_to_device(**config_device) as nc:
                 output = run_commands(nc, commands, enable=enable, parse=parse, conft=conft)
             return output
-        except ConnectError as e:
+        except (NetMikoTimeoutException, NetMikoAuthenticationException) as e:
             return f"Failed to connect to {device}: {e}"
-        except CommandError as e:
-            return f"Failed to run commands on {device}: {e}"
 
     lst = devices.split(',')
     with ThreadPoolExecutor() as executor:
