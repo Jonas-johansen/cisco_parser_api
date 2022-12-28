@@ -4,7 +4,7 @@ The Do Command is for excecuting commands on a Network device
 The do command only has one endpoint:
 - /do_command
 
-The Do Command can only connect to 1 device per request, it can do multiple commands however.
+The Do Command can only connect to 1 device per request, it can do multiple commands.
 If you need to connect to multiple devices at the same time check the DoDeviceCommand
 
 
