@@ -4,9 +4,12 @@ from netmiko import ConnectHandler, NetMikoTimeoutException, NetMikoAuthenticati
 import configparser
 from fastapi import HTTPException
 import threading
+import os 
+import json 
 
 logging.basicConfig(filename="sessions.log", level=logging.DEBUG)
 logger = logging.getLogger("netmiko")
+
 
 
 def connect_to_device(device_type, host, username, password, secret):
@@ -28,14 +31,21 @@ def run_commands(nc, commands, enable, parse, conft):
     if enable:
         nc.enable()
     outputs = []
-    for command in commands:
+    print(commands)
+    lst = commands.split(',')
+    for command in lst:
         if conft:
-            output = nc.send_config(command)
+            output = do_config(nc, commands)
         else:
             output = nc.send_command(command, use_textfsm=parse)
         outputs.append(output)
     return outputs
 
+def do_config(nc, commands):
+    lst = commands.split(',')
+    output = nc.send_config_set(lst)
+    output += nc.save_config()
+    return output
 
 def get_device_config(device_name):
     config = configparser.ConfigParser()
@@ -46,32 +56,37 @@ def get_device_config(device_name):
 def RunCommand(device_type, host, username, password, secret, command, enable, parse, conft):
     with connect_to_device(device_type, host, username, password, secret) as nc:
         return run_commands(nc, command, enable, parse, conft)
-    
-def RunDeviceCommand(device, commands, parsing, enable, conft):
-    # device_type = get_device_config(device)["device_type"]
-    # if parsing:
-    #     with open(f"commands/{device_type}.txt") as f:
-    #         supported_commands = [line.strip() for line in f.readlines()]
-    #     supported_commands_pattern = "|".join(supported_commands)
-    #     if not re.match(supported_commands_pattern, commands):
-    #         raise HTTPException(
-    #             status_code=400,
-    #             detail=f"Command not supported for parsing on this platform. Supported commands for {device_type} are {', '.join(supported_commands)}."
-    #         )
-    device_config = get_device_config(device)
-    with ConnectHandler(**device_config) as nc:
-        return run_commands(nc, commands, enable, parsing, conft)
         
         
-def RunMassDeviceCommand(devices, commands, enable, parse, conft):
+def RunDeviceCommand(devices, commands, enable, parse, conft):
     outputs = []
     lst = devices.split(',')
     for device in lst:
         config_device = get_device_config(device)
-        with connect_to_device(config_device) as nc:
+        with connect_to_device(**config_device) as nc:
             output = run_commands(nc, commands, enable, parse, conft)
         outputs.append(output)
     return outputs
 
         
         
+from concurrent.futures import ThreadPoolExecutor
+
+def RunDeviceCommandThreading(devices, commands, enable, parse, conft):
+    def connect_to_device_and_run_commands(device):
+        config_device = get_device_config(device)
+        try:
+            with connect_to_device(**config_device) as nc:
+                output = run_commands(nc, commands, enable=enable, parse=parse, conft=conft)
+            return output
+        except ConnectError as e:
+            return f"Failed to connect to {device}: {e}"
+        except CommandError as e:
+            return f"Failed to run commands on {device}: {e}"
+
+    lst = devices.split(',')
+    with ThreadPoolExecutor() as executor:
+        results = [executor.submit(connect_to_device_and_run_commands, device) for device in lst]
+    return [result.result() for result in results]
+
+
