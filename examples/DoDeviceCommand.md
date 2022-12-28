@@ -6,7 +6,7 @@ There is two endpoints here.
 - /do_device_command
 - /do_device_command_threading
 
-The only difference between the to is that _threading creates a thread for each device it connects to. 
+The only difference between the two is that _threading creates a thread for each device it connects to. 
 Thus, this is optimal when excecuting commands on several devices at a time.
 
 
