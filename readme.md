@@ -2,8 +2,6 @@
 
 The API is a tool that allows you to connect to and execute commands on network equipment, as well as parse the output into a JSON format. It was primarily developed for personal use, so it might not be right for your network / setup.
 
-Please note that the API is somewhat slow, so it may not be suitable for real-time applications. The parsing module is relatively fast, taking about 20 milliseconds, but creating a session with each network device and executing a command can take anywhere from 1-2 seconds with SSH or 2-3 seconds with Telnet. By using the do_device_command_threading module it will use pythons threading library to connect to several devices at the same time. Witch greatly improve load times when excecuting mass commands on several devices.
-
 
 The API currently has two functions:
 - Login to network equipment, execute a commands, and parse the output to JSON | It can connect to several devices at the same time.
