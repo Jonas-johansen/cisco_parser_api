@@ -1,11 +1,8 @@
-import re
 import logging
 from netmiko import ConnectHandler, NetMikoTimeoutException, NetMikoAuthenticationException
 import configparser
 from fastapi import HTTPException
-import threading
-import os 
-import json 
+
 
 logging.basicConfig(filename="sessions.log", level=logging.DEBUG)
 logger = logging.getLogger("netmiko")

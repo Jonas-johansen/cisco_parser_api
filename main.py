@@ -22,8 +22,10 @@ async def DoDeviceCommandEndpoint(devices: str = Form(), commands: str = Form(),
 async def DoCommandEndpoint(device_type: str = Form(), host: str = Form(), username: str = Form(), password: str = Form(), secret: str = Form(), commands: str = Form(), enable_mode: bool = Form(), parse: bool = Form(), conft: bool = Form()):
     return RunCommand(device_type, host, username, password, secret, commands, enable_mode, parse, conft)
 
-
+# Excecute a command on a device, connects to each device with a thread. Devices are configured in config.ini
 @app.post('/do_device_command_threading')
-async def DoDeviceCommandEndpointThreading(devices: str = Form(), commands: str = Form(), enable_mode: bool = Form(), parse: bool = Form(), conft: bool = Form()):
+async def DoDeviceCommandThreadingEndpoint(devices: str = Form(), commands: str = Form(), enable_mode: bool = Form(), parse: bool = Form(), conft: bool = Form()):
     return RunDeviceCommandThreading(devices, commands, enable_mode, parse, conft)
+# 1 device connect failure will return a error 400 for the whole batch. I will fix this soon, but be aware atm.
+
 
