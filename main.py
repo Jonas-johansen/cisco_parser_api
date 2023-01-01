@@ -1,8 +1,8 @@
 # Simple Network Automation API
 # Developed by Jonas Skaret Johansen, NH Data
 # Not yet designed for heavy workloads.
-from fastapi import FastAPI, Form, File
-from api import ParseCLIOutput, RunDeviceCommand, RunCommand, RunDeviceCommandThreading
+from fastapi import FastAPI, Form, File, Request
+from api import ParseCLIOutput, RunDeviceCommand, RunCommand, RunDeviceCommandThreading, ionix_backend
 import os
 app = FastAPI()
 
@@ -28,4 +28,14 @@ async def DoDeviceCommandThreadingEndpoint(devices: str = Form(), commands: str 
     return RunDeviceCommandThreading(devices, commands, enable_mode, parse, conft)
 # 1 device connect failure will return a error 400 for the whole batch. I will fix this soon, but be aware atm.
 
-
+@app.post('/ionix_backend')
+async def ionix_backend_endpoint(request: Request):
+    data = await request.json()
+    devices = data["devices"]
+    commands = data["commands"]
+    conft = data["conft"]
+    enable = data["enable"]
+    parsing = data["parsing"]
+    print(devices, commands, enable, conft, parsing)
+    result = ionix_backend(devices, commands, enable, parsing, conft)
+    return result
