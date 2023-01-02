@@ -1,8 +1,8 @@
 # Simple Network Automation API
 # Developed by Jonas Skaret Johansen, NH Data
-# Not yet designed for heavy workloads.
+
 from fastapi import FastAPI, Form, File, Request
-from api import ParseCLIOutput, RunDeviceCommand, RunCommand, RunDeviceCommandThreading, ionix_backend
+from api import ParseCLIOutput, RunDeviceCommand, RunCommand, RunDeviceCommandThreading, ionix_backend, get_running_config_intro
 import os
 app = FastAPI()
 
@@ -38,4 +38,12 @@ async def ionix_backend_endpoint(request: Request):
     parsing = data["parsing"]
     print(devices, commands, enable, conft, parsing)
     result = ionix_backend(devices, commands, enable, parsing, conft)
+    return result
+
+
+@app.post('/get_running_config')
+async def get_running_config_endpoint(request: Request):
+    data = await request.json()
+    devices = data["devices"]
+    result = get_running_config_intro(devices)
     return result

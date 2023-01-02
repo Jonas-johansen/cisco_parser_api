@@ -3,3 +3,4 @@ uvicorn
 ntc-templates
 netmiko
 python-multipart
+ttp[full]

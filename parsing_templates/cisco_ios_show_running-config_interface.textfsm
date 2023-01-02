@@ -1,0 +1,18 @@
+Value interface (\S+)
+Value vrf (\S+)
+Value description (\S+)
+Value ip_address (\S+)
+Value subnet_mask (\S+)
+Value duplex (\S+)
+Value speed (\S+)
+
+Start
+  ^interface ${interface} -> Record
+  ^ ip vrf forwarding ${vrf} -> Continue
+  ^ vrf forwarding ${vrf} -> Continue
+  ^ description ${description} -> Continue
+  ^ ip address ${ip_address} ${subnet_mask} -> Continue
+  ^ duplex ${duplex} -> Continue
+  ^ speed ${speed} -> Continue
+  ^! -> End
+
